@@ -16,6 +16,7 @@ export const createCompanyValidation = [
   body('employeeLimit').isInt({ min: 1 }).withMessage('Employee limit must be at least 1'),
   body('storageLimitMB').isInt({ min: 100 }).withMessage('Storage limit must be at least 100 MB'),
   body('branchLimit').isInt({ min: 1 }).withMessage('Branch limit must be at least 1'),
+  body('password').trim().isLength({ min: 6 }).withMessage('Company admin password is required and must be at least 6 characters'),
 ];
 
 export const updateCompanyValidation = [

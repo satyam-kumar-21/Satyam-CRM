@@ -52,6 +52,7 @@ export class SuperAdminService {
     name: string;
     email: string;
     phone: string;
+    password: string;
     plan: SubscriptionPlan;
     employeeLimit: number;
     storageLimitMB: number;
@@ -67,9 +68,17 @@ export class SuperAdminService {
     }
 
     const companyIdString = `CMP-${crypto.randomBytes(3).toString('hex').toUpperCase()}`;
-    const companyCode = data.name.replace(/[^a-zA-Z0-9]/g, '').slice(0, 5).toUpperCase();
-    const rawPassword = crypto.randomBytes(4).toString('hex');
-    const passwordHash = await bcrypt.hash(rawPassword, 10);
+    const generateCompanyCode = () => {
+      const chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789';
+      return Array.from({ length: 5 }, () => chars[Math.floor(Math.random() * chars.length)]).join('');
+    };
+
+    let companyCode = generateCompanyCode();
+    while (await Company.exists({ companyCode })) {
+      companyCode = generateCompanyCode();
+    }
+
+    const passwordHash = await bcrypt.hash(data.password, 10);
 
     const planExpiryDate = new Date();
     planExpiryDate.setFullYear(planExpiryDate.getFullYear() + 1);
@@ -101,15 +110,7 @@ export class SuperAdminService {
       isSuspended: false,
     });
 
-    return {
-      company: newCompany,
-      adminCredentials: {
-        companyIdString,
-        companyCode,
-        adminEmail: rootAdmin.email,
-        generatedPassword: rawPassword,
-      },
-    };
+    return newCompany;
   }
 
   /**
