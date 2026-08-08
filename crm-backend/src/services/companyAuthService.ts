@@ -102,7 +102,14 @@ export class CompanyAuthService {
   }
 
   static async getEmployees(companyId: string) {
-    return await Employee.find({ companyId }).sort({ createdAt: -1 });
+    const employees = await Employee.find({ companyId }).sort({ createdAt: -1 });
+    return Promise.all(employees.map(async (employee) => {
+      const latestMessage = await Message.findOne({
+        companyId,
+        $or: [{ senderId: employee._id }, { recipientId: employee._id }],
+      }).sort({ createdAt: -1 });
+      return { ...employee.toObject(), latestChatAt: latestMessage?.createdAt || null };
+    }));
   }
 
   static async updateEmployeePermissions(companyId: string, employeeId: string, permissions: string[]) {
@@ -184,5 +191,51 @@ export class CompanyAuthService {
     }
 
     return await Message.find({ companyId, groupId }).sort({ createdAt: 1 });
+  }
+
+  static async getConversationMessages(companyId: string, userId: string, conversationId: string) {
+    const group = await Group.findOne({ _id: conversationId, companyId });
+    if (group) {
+      const messages = await Message.find({ companyId, groupId: conversationId }).sort({ createdAt: 1 });
+      return messages.map((message) => ({ ...message.toObject(), isMine: message.senderId.toString() === userId }));
+    }
+
+    const employee = await Employee.findOne({ companyId, _id: conversationId });
+    if (!employee) throw { statusCode: 404, message: 'Conversation not found.' };
+
+    const messages = await Message.find({
+      companyId,
+      $or: [
+        { senderId: userId, recipientId: conversationId },
+        { senderId: conversationId, recipientId: userId },
+      ],
+    }).sort({ createdAt: 1 });
+    return messages.map((message) => ({ ...message.toObject(), isMine: message.senderId.toString() === userId }));
+  }
+
+  static async postConversationMessage(companyId: string, userId: string, conversationId: string, content: string) {
+    const group = await Group.findOne({ _id: conversationId, companyId });
+    if (group) return Message.create({ companyId, groupId: conversationId, senderId: userId, content });
+
+    const employee = await Employee.findOne({ companyId, _id: conversationId });
+    if (!employee) throw { statusCode: 404, message: 'Conversation not found.' };
+
+    return Message.create({ companyId, senderId: userId, recipientId: conversationId, content });
+  }
+
+  static async updateMessage(companyId: string, userId: string, messageId: string, content: string) {
+    const message = await Message.findOneAndUpdate(
+      { companyId, _id: messageId, senderId: userId },
+      { content },
+      { new: true, runValidators: true },
+    );
+    if (!message) throw { statusCode: 404, message: 'Message not found or you are not the owner.' };
+    return { ...message.toObject(), isMine: true };
+  }
+
+  static async deleteMessage(companyId: string, userId: string, messageId: string) {
+    const result = await Message.deleteOne({ companyId, _id: messageId, senderId: userId });
+    if (!result.deletedCount) throw { statusCode: 404, message: 'Message not found or you are not the owner.' };
+    return { id: messageId };
   }
 }

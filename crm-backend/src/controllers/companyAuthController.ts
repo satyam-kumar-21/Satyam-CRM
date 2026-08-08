@@ -146,4 +146,36 @@ export class CompanyAuthController {
       next(error);
     }
   }
+
+  static async getConversationMessages(req: AuthenticatedRequest, res: Response, next: NextFunction) {
+    try {
+      const messages = await CompanyAuthService.getConversationMessages(req.user!.companyId!, req.user!.id, req.params.conversationId);
+      ApiResponse.success(res, 'Conversation messages fetched successfully', messages);
+    } catch (error) { next(error); }
+  }
+
+  static async postConversationMessage(req: AuthenticatedRequest, res: Response, next: NextFunction) {
+    try {
+      const errors = validationResult(req);
+      if (!errors.isEmpty()) { res.status(400).json({ success: false, errors: errors.array() }); return; }
+      const message = await CompanyAuthService.postConversationMessage(req.user!.companyId!, req.user!.id, req.params.conversationId, req.body.content);
+      ApiResponse.success(res, 'Message posted successfully', message, 201);
+    } catch (error) { next(error); }
+  }
+
+  static async updateMessage(req: AuthenticatedRequest, res: Response, next: NextFunction) {
+    try {
+      const errors = validationResult(req);
+      if (!errors.isEmpty()) { res.status(400).json({ success: false, errors: errors.array() }); return; }
+      const message = await CompanyAuthService.updateMessage(req.user!.companyId!, req.user!.id, req.params.messageId, req.body.content);
+      ApiResponse.success(res, 'Message updated successfully', message);
+    } catch (error) { next(error); }
+  }
+
+  static async deleteMessage(req: AuthenticatedRequest, res: Response, next: NextFunction) {
+    try {
+      const result = await CompanyAuthService.deleteMessage(req.user!.companyId!, req.user!.id, req.params.messageId);
+      ApiResponse.success(res, 'Message deleted successfully', result);
+    } catch (error) { next(error); }
+  }
 }

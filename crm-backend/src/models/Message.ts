@@ -3,8 +3,9 @@ import { tenantPlugin } from '../plugins/tenantPlugin';
 
 export interface IMessage extends Document {
   companyId: Schema.Types.ObjectId;
-  groupId: Schema.Types.ObjectId;
+  groupId?: Schema.Types.ObjectId;
   senderId: Schema.Types.ObjectId;
+  recipientId?: Schema.Types.ObjectId;
   content: string;
   createdAt: Date;
   updatedAt: Date;
@@ -12,8 +13,9 @@ export interface IMessage extends Document {
 
 const MessageSchema = new Schema<IMessage>(
   {
-    groupId: { type: Schema.Types.ObjectId, ref: 'Group', required: true },
+    groupId: { type: Schema.Types.ObjectId, ref: 'Group' },
     senderId: { type: Schema.Types.ObjectId, ref: 'Employee', required: true },
+    recipientId: { type: Schema.Types.ObjectId, ref: 'Employee' },
     content: { type: String, required: true, trim: true },
   },
   { timestamps: true }

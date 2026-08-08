@@ -31,5 +31,9 @@ router.delete('/sales/:id', authorizeRoles(Roles.COMPANY_ADMIN), CompanySalesCon
 router.post('/groups', authorizeRoles(Roles.COMPANY_ADMIN), createGroupValidation, CompanyAuthController.createGroup);
 router.post('/groups/:groupId/messages', authorizeRoles(Roles.COMPANY_ADMIN, Roles.HR, Roles.MANAGER, Roles.TEAM_LEAD, Roles.EMPLOYEE), postMessageValidation, CompanyAuthController.postMessage);
 router.get('/groups/:groupId/messages', authorizeRoles(Roles.COMPANY_ADMIN, Roles.HR, Roles.MANAGER, Roles.TEAM_LEAD, Roles.EMPLOYEE), CompanyAuthController.getGroupMessages);
+router.get('/conversations/:conversationId/messages', authorizeRoles(Roles.COMPANY_ADMIN, Roles.HR, Roles.MANAGER, Roles.TEAM_LEAD, Roles.EMPLOYEE), CompanyAuthController.getConversationMessages);
+router.post('/conversations/:conversationId/messages', authorizeRoles(Roles.COMPANY_ADMIN, Roles.HR, Roles.MANAGER, Roles.TEAM_LEAD, Roles.EMPLOYEE), postMessageValidation, CompanyAuthController.postConversationMessage);
+router.patch('/messages/:messageId', authorizeRoles(Roles.COMPANY_ADMIN, Roles.HR, Roles.MANAGER, Roles.TEAM_LEAD, Roles.EMPLOYEE), postMessageValidation, CompanyAuthController.updateMessage);
+router.delete('/messages/:messageId', authorizeRoles(Roles.COMPANY_ADMIN, Roles.HR, Roles.MANAGER, Roles.TEAM_LEAD, Roles.EMPLOYEE), CompanyAuthController.deleteMessage);
 
 export default router;
