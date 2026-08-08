@@ -1,0 +1,24 @@
+import { Schema, model, Document } from 'mongoose';
+import { tenantPlugin } from '../plugins/tenantPlugin';
+
+export interface IMessage extends Document {
+  companyId: Schema.Types.ObjectId;
+  groupId: Schema.Types.ObjectId;
+  senderId: Schema.Types.ObjectId;
+  content: string;
+  createdAt: Date;
+  updatedAt: Date;
+}
+
+const MessageSchema = new Schema<IMessage>(
+  {
+    groupId: { type: Schema.Types.ObjectId, ref: 'Group', required: true },
+    senderId: { type: Schema.Types.ObjectId, ref: 'Employee', required: true },
+    content: { type: String, required: true, trim: true },
+  },
+  { timestamps: true }
+);
+
+MessageSchema.plugin(tenantPlugin);
+
+export const Message = model<IMessage>('Message', MessageSchema);

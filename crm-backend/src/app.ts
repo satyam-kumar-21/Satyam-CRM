@@ -5,7 +5,8 @@ import morgan from 'morgan';
 import cookieParser from 'cookie-parser';
 import { apiRateLimiter } from './middlewares/rateLimiter';
 import { errorHandler } from './middlewares/errorMiddleware';
-import superAdminRoutes from './routes/superAdminRoutes'
+import superAdminRoutes from './routes/superAdminRoutes';
+import companyRoutes from './routes/companyRoutes';
 
 const app: Application = express();
 
@@ -24,7 +25,8 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 app.use(cookieParser());
 app.use('/api', apiRateLimiter);
-app.use('/api/v1/super-admin', superAdminRoutes )
+app.use('/api/v1/super-admin', superAdminRoutes);
+app.use('/api/v1/company', companyRoutes);
 
 // Health Check Endpoint
 app.get('/health', (req, res) => {

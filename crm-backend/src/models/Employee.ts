@@ -11,6 +11,7 @@ export interface IEmployee extends Document {
   phone: string;
   avatar?: string;
   role: Roles;
+  permissions: string[];
   departmentId?: Schema.Types.ObjectId;
   teamId?: Schema.Types.ObjectId;
   isSuspended: boolean;
@@ -28,6 +29,7 @@ const EmployeeSchema = new Schema<IEmployee>(
     phone: { type: String, required: true },
     avatar: { type: String, default: '' },
     role: { type: String, enum: Object.values(Roles), default: Roles.EMPLOYEE },
+    permissions: { type: [String], default: [] },
     departmentId: { type: Schema.Types.ObjectId, ref: 'Department' },
     teamId: { type: Schema.Types.ObjectId, ref: 'Team' },
     isSuspended: { type: Boolean, default: false },

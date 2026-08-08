@@ -97,6 +97,7 @@ export class SuperAdminService {
       passwordHash,
       phone: data.phone,
       role: Roles.COMPANY_ADMIN,
+      permissions: ['MANAGE_EMPLOYEES', 'MANAGE_GROUPS', 'VIEW_REPORTS'],
       isSuspended: false,
     });
 
