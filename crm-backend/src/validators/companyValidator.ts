@@ -25,3 +25,24 @@ export const createGroupValidation = [
 export const postMessageValidation = [
   body('content').trim().notEmpty().withMessage('Message content is required'),
 ];
+
+export const leadValidation = [
+  body('name').trim().notEmpty().withMessage('Lead name is required'),
+  body('country').trim().notEmpty().withMessage('Lead country is required'),
+  body('system').trim().notEmpty().withMessage('Lead system is required'),
+  body('contactNo').trim().notEmpty().withMessage('Lead contact number is required'),
+  body('otherDetails').optional().trim(),
+  body('connected').isIn(['yes', 'no']).withMessage('Connected must be yes or no'),
+  body('connectedBy').trim().notEmpty().withMessage('Connected by is required'),
+  body('isSale').isIn(['yes', 'no']).withMessage('Sale status must be yes or no'),
+];
+
+export const saleValidation = [
+  body('name').trim().notEmpty().withMessage('Customer name is required'),
+  body('country').trim().notEmpty().withMessage('Customer country is required'),
+  body('system').trim().notEmpty().withMessage('Purchased system is required'),
+  body('connectedBy').trim().notEmpty().withMessage('Closed by is required'),
+  body('amount').isFloat({ min: 0 }).withMessage('Sale amount must be a positive number'),
+  body('paymentMethod').isIn(['Card', 'Check', 'Wire Transfer', 'Cash', 'Other']).withMessage('Valid payment method is required'),
+  body('saleDate').isISO8601().withMessage('Valid sale date is required'),
+];

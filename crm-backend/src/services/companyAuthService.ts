@@ -119,6 +119,38 @@ export class CompanyAuthService {
     return { id: employee._id, permissions: employee.permissions };
   }
 
+  static async updateEmployeeStatus(companyId: string, employeeId: string, isSuspended: boolean) {
+    const employee = await Employee.findOne({ companyId, _id: employeeId });
+
+    if (!employee) {
+      throw { statusCode: 404, message: 'Employee not found.' };
+    }
+
+    if (employee.role === Roles.COMPANY_ADMIN) {
+      throw { statusCode: 400, message: 'Company admin accounts cannot be blocked.' };
+    }
+
+    employee.isSuspended = isSuspended;
+    if (isSuspended) employee.refreshTokens = [];
+    await employee.save();
+
+    return { id: employee._id, isSuspended: employee.isSuspended };
+  }
+
+  static async deleteEmployee(companyId: string, employeeId: string) {
+    const employee = await Employee.findOne({ companyId, _id: employeeId });
+
+    if (!employee) {
+      throw { statusCode: 404, message: 'Employee not found.' };
+    }
+
+    if (employee.role === Roles.COMPANY_ADMIN) {
+      throw { statusCode: 400, message: 'Company admin accounts cannot be deleted.' };
+    }
+
+    await Employee.deleteOne({ _id: employee._id, companyId });
+  }
+
   static async createGroup(companyId: string, creatorId: string, data: { name: string; description?: string }) {
     const group = await Group.create({
       companyId,

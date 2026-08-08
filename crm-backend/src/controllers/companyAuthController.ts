@@ -90,6 +90,28 @@ export class CompanyAuthController {
     }
   }
 
+  static async updateEmployeeStatus(req: AuthenticatedRequest, res: Response, next: NextFunction) {
+    try {
+      const employee = await CompanyAuthService.updateEmployeeStatus(
+        req.user!.companyId!,
+        req.params.id,
+        Boolean(req.body.isSuspended)
+      );
+      ApiResponse.success(res, `Employee account ${employee.isSuspended ? 'blocked' : 'unblocked'} successfully`, employee);
+    } catch (error) {
+      next(error);
+    }
+  }
+
+  static async deleteEmployee(req: AuthenticatedRequest, res: Response, next: NextFunction) {
+    try {
+      await CompanyAuthService.deleteEmployee(req.user!.companyId!, req.params.id);
+      ApiResponse.success(res, 'Employee deleted successfully', { id: req.params.id });
+    } catch (error) {
+      next(error);
+    }
+  }
+
   static async createGroup(req: AuthenticatedRequest, res: Response, next: NextFunction) {
     try {
       const group = await CompanyAuthService.createGroup(req.user!.companyId!, req.user!.id, req.body);
