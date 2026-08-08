@@ -36,6 +36,24 @@ export class SuperAdminController {
     }
   }
 
+  static async logout(req: Request, res: Response, next: NextFunction) {
+    try {
+      const cookieOptions = {
+        httpOnly: true,
+        secure: process.env.NODE_ENV === 'production',
+        sameSite: 'lax' as const,
+      };
+
+      res.clearCookie('accessToken', cookieOptions);
+      res.clearCookie('refreshToken', cookieOptions);
+
+      // Pass null for data
+      ApiResponse.success(res, 'Super Admin logged out successfully', null);
+    } catch (error) {
+      next(error);
+    }
+  }
+
   static async getDashboardData(req: Request, res: Response, next: NextFunction) {
     try {
       const stats = await SuperAdminService.getDashboardAnalytics();

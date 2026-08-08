@@ -7,7 +7,8 @@
     "build": "tsc",
     "start": "node dist/server.js",
     "dev": "ts-node-dev --respawn --transpile-only --prefer-ts-exts src/server.ts",
-    "seed": "ts-node src/seeders/index.ts"
+    "seed": "ts-node src/seeders/index.ts",
+    "local": "nodemon src/server.ts"
   },
   "dependencies": {
     "bcrypt": "^5.1.1",
@@ -32,6 +33,7 @@
     "@types/jsonwebtoken": "^9.0.6",
     "@types/morgan": "^1.9.9",
     "@types/node": "^20.12.7",
+    "nodemon": "^3.1.14",
     "ts-node": "^10.9.2",
     "ts-node-dev": "^2.0.0",
     "typescript": "^5.4.5"

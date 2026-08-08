@@ -20,5 +20,6 @@ router.get('/dashboard', SuperAdminController.getDashboardData);
 router.get('/companies', SuperAdminController.getAllCompanies);
 router.post('/companies', createCompanyValidation, SuperAdminController.createCompany);
 router.patch('/companies/:id/status', SuperAdminController.updateStatus);
+router.post('/logout', SuperAdminController.logout);
 
 export default router;
